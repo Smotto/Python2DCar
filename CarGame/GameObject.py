@@ -1,4 +1,5 @@
 import pyglet
+from pygame import Vector2
 
 # Preload the image for no lag!
 def preload_image(image):
@@ -23,19 +24,29 @@ class GameObject:
 
         # Ask if the image is !null
         if sprite is not None:
+            # Image is the parameter
             self.sprite = sprite
+            # Image is the x position
             self.sprite.x = self.position_x
+            # Image is the y position
             self.sprite.y = self.position_y
+            # Image has a rotation
             self.sprite.rotation = self.rotation
+            # Image has a width
             self.width = self.sprite.width
+            # Image has a height
             self.height = self.sprite.height
 
     # Draw the sprite itself.
     def draw(self):
-            self.sprite.draw()
+       # Draw Image
+        self.sprite.draw()
 
     def update(self):
+        # Update x position
         self.sprite.x = self.position_x
+        # Update y position
         self.sprite.y = self.position_y
 
+        # Update image's rotation
         self.sprite.rotation = self.rotation
