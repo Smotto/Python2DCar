@@ -5,9 +5,12 @@ from GameObject import GameObject, preload_image, center_image
 from pyglet.sprite import Sprite
 from pyglet.gl import *
 from pygame import Vector2
+from CircleLines import *
+
 
 class GameWindow(pyglet.window.Window):
     def __init__(self, *args, **kwargs):
+        # Refers to pyglet.window.Window
         super().__init__(*args, **kwargs)
 
         # set the window's location at a certain point, x-pos, y-pos
@@ -21,23 +24,24 @@ class GameWindow(pyglet.window.Window):
 
         # Preload the background
         self.car_background = Sprite(preload_image('CarGameBackground.jpg'))
+
         # Preload the car
         car = preload_image('carFIXED.png')
         # Center the car's rotation at its center.
         center_image(car)
         # Transfer car to a sprite
         sprite_car = pyglet.sprite.Sprite(car)
-
         self.rotation = 0
         self.car_acceleration = 0
         self.car_max_acceleration = 300
-
-
+        self.car_max_velocity = 300
         # Initial sprite position, rotation, image
-        self.car = GameObject(125, 425, self.rotation, sprite_car)
-
+        self.car = GameObject(135, 425, self.rotation, sprite_car)
         self.car_vector_position = Vector2(self.car.position_x, self.car.position_y)
         self.car_vector_velocity = Vector2(0, 0)
+
+        self.circle = CircleLines(200, 690, 288)
+        self.circle2 = CircleLines2(200, 581, 227)
 
         # Keys
         self.right = False
@@ -45,7 +49,7 @@ class GameWindow(pyglet.window.Window):
         self.forward = False
         self.back = False
 
-     # KEY PRESS
+    # KEY PRESS
     def on_key_press(self, symbol, modifiers):
         if symbol == key.RIGHT:
             self.right = True
@@ -77,6 +81,10 @@ class GameWindow(pyglet.window.Window):
         self.car_background.draw()
         # Step 2: Draw the Sprite. from GameObject, there's a method called draw.
         self.car.draw()
+
+        self.circle.draw()
+        self.circle2.draw()
+
         # Step 3: Draw on display FPS
         self.fps_display.draw()
 
@@ -88,12 +96,14 @@ class GameWindow(pyglet.window.Window):
         if self.forward:
             self.change_velocity(self.car_acceleration, dt)
             self.check_velocity()
+            self.check_position()
             self.change_position(dt)
             self.check_acceleration()
 
         if not self.forward:
             self.change_velocity_negative(self.car_acceleration, dt)
             self.check_velocity()
+            self.check_position()
             self.change_position(dt)
             self.check_acceleration()
 
@@ -108,10 +118,10 @@ class GameWindow(pyglet.window.Window):
 
         self.check_rotation()
 
-        print(self.car_vector_position)
-        print(self.car_vector_velocity)
+        # print(self.car_vector_position)
+        # print(self.car_vector_velocity)
 
-    def brake_car(self,acceleration, dt):
+    def brake_car(self, acceleration, dt):
         self.car_vector_velocity -= (acceleration * dt * 5, 0)
 
     def check_acceleration(self):
@@ -124,6 +134,16 @@ class GameWindow(pyglet.window.Window):
         # Figure out what is going on with the math here.
         self.car_vector_position += self.car_vector_velocity.rotate(-self.car.rotation) * dt
         self.car.position_x, self.car.position_y = self.car_vector_position
+
+    def check_position(self):
+        if self.car.position_x < 0:
+            self.car.position_x = 0
+        if self.car.position_x > 1600:
+            self.car.position_x = 1600
+        if self.car.position_y > 900:
+            self.car.position_y = 900
+        if self.car.position_y < 0:
+            self.car.position_y = 0
 
     def change_velocity(self, acceleration, dt):
         self.car_vector_velocity += (acceleration * dt, 0)
@@ -138,9 +158,12 @@ class GameWindow(pyglet.window.Window):
             self.car_vector_velocity_x = 0
         if self.car_vector_velocity_y < 0:
             self.car_vector_velocity_y = 0
+        if self.car_vector_velocity_x > self.car_max_velocity:
+            self.car_vector_velocity_x = self.car_max_velocity
+        if self.car_vector_velocity_y > self.car_max_velocity:
+            self.car_vector_velocity_y = self.car_max_velocity
 
         self.car_vector_velocity = Vector2(self.car_vector_velocity_x, self.car_vector_velocity_y)
-        pass
 
     def check_rotation(self):
         # Reset rotation degrees so that it doesn't go to a billion.
@@ -149,10 +172,10 @@ class GameWindow(pyglet.window.Window):
 
     def update(self, dt):
         # Update car in order of Delta Time
-         self.update_car(dt)
+        self.update_car(dt)
 
 if __name__ == "__main__":
-    window = GameWindow(1600, 900, "Auto Car", resizable = False)
+    window = GameWindow(1600, 900, "Auto Car", resizable=False)
     # Make sure the clock is the same as the window's update, and the window's frame rate
     pyglet.clock.schedule_interval(window.update, window.frame_rate)
     pyglet.app.run()
