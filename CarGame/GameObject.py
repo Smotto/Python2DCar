@@ -4,7 +4,6 @@ from pygame import Vector2
 # Preload the image for no lag!
 def preload_image(image):
     img = pyglet.image.load('res/sprites/' + image)
-
     return img
 
 def center_image(image):
@@ -22,7 +21,7 @@ class GameObject:
         self.position_y = position_y
         self.rotation = rotation
 
-        # Ask if the image is !null
+        # Ask if the image is available
         if sprite is not None:
             # Image is the parameter
             self.sprite = sprite
