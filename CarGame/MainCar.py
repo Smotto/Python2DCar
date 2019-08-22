@@ -100,11 +100,10 @@ class GameWindow(pyglet.window.Window):
             self.change_position(dt)
 
         if not self.forward:
-            self.change_position(dt)
             self.check_velocity()
             self.check_acceleration()
             self.change_velocity_negative(self.car_acceleration, dt)
-
+            self.change_position(dt)
 
         if self.left:
             self.car.rotation -= 2
