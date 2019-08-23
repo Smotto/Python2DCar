@@ -21,6 +21,7 @@ class GameWindow(pyglet.window.Window):
         # Make fps display bigger.
         self.fps_display.label.font_size = 25
 
+
         # Preload the background
         self.car_background = Sprite(preload_image('CarGameBackground.jpg'))
         # Preload the car
@@ -41,6 +42,9 @@ class GameWindow(pyglet.window.Window):
         # Two New Objects that are Circles.
         self.circle = CircleLines(200, 690, 288)
         self.circle2 = CircleLines2(200, 581, 227)
+
+        # Death Counter
+        self.death_counter = 0
 
         # Keys
         self.right = False
@@ -73,9 +77,14 @@ class GameWindow(pyglet.window.Window):
         if symbol == key.DOWN:
             self.back = False
 
+    # Draw on Window
     def on_draw(self):
+        death_label = pyglet.text.Label(str(self.death_counter),
+                                             font_name='Times New Roman',
+                                             font_size=36,
+                                             x=1500, y=800,
+                                             anchor_x='center', anchor_y='center')
         # Check Collisions and position
-        self.check_collision()
         self.check_position()
         # Step 0: Clear the area.
         self.clear()
@@ -89,8 +98,13 @@ class GameWindow(pyglet.window.Window):
         self.circle2.draw()
         # Step 3: Draw on display FPS
         self.fps_display.draw()
+        # Step 4: Draw the death counter
+        death_label.draw()
+
+        print(self.death_counter)
 
     def update_car(self, dt):
+        self.check_collision()
         self.car.update()
         self.car_acceleration = 50
         if self.forward:
@@ -131,6 +145,7 @@ class GameWindow(pyglet.window.Window):
         self.car.position_x, self.car.position_y = self.car_vector_position
 
     def check_collision(self):
+
         # Pythagorean Theorem
         def get_distance(x1, y1, x2, y2):
             xDistance = x2 - x1
@@ -142,11 +157,13 @@ class GameWindow(pyglet.window.Window):
         def reset_position_velocity(circleX, circleY):
             for i, number_x in enumerate(circleX):
                 number_y = circleY[i]
-                distance_from_wall = get_distance(self.car.position_x + 12.5, self.car.position_y + 5.5, number_x, number_y)
+                distance_from_wall = get_distance(self.car.position_x, self.car.position_y, number_x, number_y)
+
                 # Check this number to see how well it works with AI
-                if distance_from_wall < 5.0:
+                if distance_from_wall < 7.0:
                     self.car_vector_position = [135, 450]
                     self.car_vector_velocity = [0, 0]
+                    self.death_counter += .5
 
         reset_position_velocity(self.circle.vertices_x, self.circle.vertices_y)
         reset_position_velocity(self.circle2.vertices_x, self.circle2.vertices_y)
@@ -191,6 +208,7 @@ class GameWindow(pyglet.window.Window):
         self.check_collision()
         # Update car in order of Delta Time
         self.update_car(dt)
+
 
 if __name__ == "__main__":
     window = GameWindow(1600, 900, "Auto Car", resizable=False)
