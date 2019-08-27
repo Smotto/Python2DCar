@@ -1,4 +1,4 @@
 # Python2DCarTensorFlow
 # Had to learn Python for the first time.
-# Had to learn how to use Tensor Flow.
+# Learning how to use AI to make the car move on its own on the track.
 # Libraries: pyglet, pygame
