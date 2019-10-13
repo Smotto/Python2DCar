@@ -79,7 +79,7 @@ class GameWindow(pyglet.window.Window):
 
     # Draw on Window
     def on_draw(self):
-        death_label = pyglet.text.Label(str(self.death_counter),
+        death_label = pyglet.text.Label(str(int(self.death_counter)),
                                              font_name='Times New Roman',
                                              font_size=36,
                                              x=1500, y=800,
@@ -100,8 +100,6 @@ class GameWindow(pyglet.window.Window):
         self.fps_display.draw()
         # Step 4: Draw the death counter
         death_label.draw()
-
-        print(self.death_counter)
 
     def update_car(self, dt):
         self.check_collision()
@@ -145,7 +143,6 @@ class GameWindow(pyglet.window.Window):
         self.car.position_x, self.car.position_y = self.car_vector_position
 
     def check_collision(self):
-
         # Pythagorean Theorem
         def get_distance(x1, y1, x2, y2):
             xDistance = x2 - x1
@@ -163,7 +160,7 @@ class GameWindow(pyglet.window.Window):
                 if distance_from_wall < 7.0:
                     self.car_vector_position = [135, 450]
                     self.car_vector_velocity = [0, 0]
-                    self.death_counter += .5
+                    self.death_counter += 1
 
         reset_position_velocity(self.circle.vertices_x, self.circle.vertices_y)
         reset_position_velocity(self.circle2.vertices_x, self.circle2.vertices_y)
@@ -205,7 +202,6 @@ class GameWindow(pyglet.window.Window):
             self.car.rotation = 0
 
     def update(self, dt):
-        self.check_collision()
         # Update car in order of Delta Time
         self.update_car(dt)
 
